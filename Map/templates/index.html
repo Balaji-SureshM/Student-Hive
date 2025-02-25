@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Navigation System</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        #navigation-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            width: 300px;
+        }
+        select, button {
+            width: 100%;
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background: #4169E1;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        button.cancel {
+            background: white;
+            color: #4169E1;
+            border: 1px solid #4169E1;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="navigation-panel">
+        <h2>Campus Navigation</h2>
+        <select id="start-room">
+            <option value="">Select Start Room</option>
+        </select>
+        <select id="end-room">
+            <option value="">Select End Room</option>
+        </select>
+        <button id="navigate-btn" disabled>Navigate</button>
+        <button id="cancel-btn" class="cancel" style="display: none;">Cancel Navigation</button>
+    </div>
+
+    <script>
+        // Initialize Three.js scene
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Add OrbitControls
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.maxDistance = 500;
+        controls.minPolarAngle = Math.PI / 6;
+        controls.maxPolarAngle = Math.PI / 2.5;
+
+        // Set initial camera position
+        camera.position.set(20, 20, 20);
+
+        // Add lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+        directionalLight.position.set(50, 50, 25);
+        scene.add(directionalLight);
+
+        // Add fog
+        scene.fog = new THREE.Fog(0xf0f0f0, 0.0008, 500);
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Navigation panel functionality
+        const buildings = ['academic', 'library', 'admin', 'sports', 'cafeteria', 'science', 'engineering', 'arts', 'student_center'];
+        const startRoomSelect = document.getElementById('start-room');
+        const endRoomSelect = document.getElementById('end-room');
+        const navigateBtn = document.getElementById('navigate-btn');
+        const cancelBtn = document.getElementById('cancel-btn');
+
+        // Populate room options
+        function generateRoomOptions(building) {
+            const floors = Math.floor({
+                academic: 20,
+                library: 15,
+                admin: 12,
+                sports: 10,
+                cafeteria: 8,
+                science: 18,
+                engineering: 16,
+                arts: 14,
+                student_center: 12
+            }[building] / 4);
+
+            return Array.from({ length: floors }, (_, i) => [
+                `${building}-${i + 1}-L`,
+                `${building}-${i + 1}-R`
+            ]).flat();
+        }
+
+        // Add options to selects
+        buildings.forEach(building => {
+            const rooms = generateRoomOptions(building);
+            const buildingOptgroup = document.createElement('optgroup');
+            buildingOptgroup.label = building.charAt(0).toUpperCase() + building.slice(1);
+
+            rooms.forEach(room => {
+                const option = document.createElement('option');
+                option.value = room;
+                option.textContent = room;
+                buildingOptgroup.appendChild(option);
+            });
+
+            startRoomSelect.appendChild(buildingOptgroup.cloneNode(true));
+            endRoomSelect.appendChild(buildingOptgroup);
+        });
+
+        // Enable/disable navigate button
+        function updateNavigateButton() {
+            navigateBtn.disabled = !startRoomSelect.value || !endRoomSelect.value;
+        }
+
+        startRoomSelect.addEventListener('change', updateNavigateButton);
+        endRoomSelect.addEventListener('change', updateNavigateButton);
+
+        // Handle navigation
+        navigateBtn.addEventListener('click', () => {
+            const startRoom = startRoomSelect.value;
+            const endRoom = endRoomSelect.value;
+
+            fetch('/api/path', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    startRoom: startRoom,
+                    endRoom: endRoom
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Handle path visualization
+                console.log('Path:', data.path);
+                // TODO: Implement path visualization
+                navigateBtn.style.display = 'none';
+                cancelBtn.style.display = 'block';
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        // Handle navigation cancellation
+        cancelBtn.addEventListener('click', () => {
+            // TODO: Clear path visualization
+            navigateBtn.style.display = 'block';
+            cancelBtn.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
