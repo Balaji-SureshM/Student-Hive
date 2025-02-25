@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <h1 class="display-5 fw-bold">Share Study Material</h1>
+                <p class="lead text-secondary">Help your fellow students by sharing your study resources.</p>
+            </div>
+
+            <!-- Upload Form -->
+            <div class="card">
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.csrf_token }}
+                        
+                        <div class="mb-4">
+                            <label for="title" class="form-label">Title</label>
+                            <input type="text" 
+                                   class="form-control form-control-lg" 
+                                   id="title" 
+                                   name="title" 
+                                   required 
+                                   placeholder="Give your material a descriptive title">
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" 
+                                      id="description" 
+                                      name="description" 
+                                      rows="4" 
+                                      required 
+                                      placeholder="Describe what this material covers and how it can help others"></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="file" class="form-label">Upload File</label>
+                            <div class="input-group">
+                                <input type="file" 
+                                       class="form-control" 
+                                       id="file" 
+                                       name="file" 
+                                       required
+                                       accept=".pdf,.doc,.docx,.txt,.ppt,.pptx,.xls,.xlsx">
+                            </div>
+                            <div class="form-text">
+                                Supported formats: PDF, DOC, DOCX, TXT, PPT, PPTX, XLS, XLSX (Max size: 16MB)
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-cloud-upload-alt me-2"></i>Upload Material
+                            </button>
+                            <a href="{{ url_for('study_materials') }}" class="btn btn-outline-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tips Card -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-lightbulb text-warning me-2"></i>Tips for Sharing
+                    </h5>
+                    <ul class="card-text mb-0">
+                        <li>Make sure your title is clear and descriptive</li>
+                        <li>Include the subject and topic in your description</li>
+                        <li>Mention what level of knowledge this material is suitable for</li>
+                        <li>Check that your file is in a supported format</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Hero Section -->
+    <div class="bg-primary bg-gradient text-white rounded-3 p-5 mb-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-3">Study Materials</h1>
+                <p class="lead mb-0">Search through our collection of learning resources or discover AI-curated content tailored to your interests.</p>
+            </div>
+            {% if current_user.is_authenticated %}
+            <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+                <a href="{{ url_for('upload_material') }}" class="btn btn-light btn-lg">
+                    <i class="fas fa-upload me-2"></i>Share Material
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Search Section -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <form method="GET" class="mb-0">
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-white border-end-0">
+                                <i class="fas fa-search text-primary"></i>
+                            </span>
+                            <input type="text" 
+                                   class="form-control border-start-0 ps-0" 
+                                   name="q" 
+                                   value="{{ search_query or '' }}"
+                                   placeholder="Search for study materials (e.g., Python, Data Structures)"
+                                   aria-label="Search study materials">
+                            <button class="btn btn-primary px-4" type="submit">Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if search_query %}
+    <div class="d-flex align-items-center mb-4">
+        <div class="flex-grow-1">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="{{ url_for('study_materials') }}">Study Materials</a></li>
+                    <li class="breadcrumb-item active">Search Results</li>
+                </ol>
+            </nav>
+            <h2 class="h4 mb-0 mt-2">Results for: <span class="text-primary">{{ search_query }}</span></h2>
+        </div>
+        <a href="{{ url_for('study_materials') }}" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-times me-1"></i>Clear Search
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Materials Grid -->
+    {% if materials %}
+    <div class="row g-4">
+        {% for material in materials %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h5 class="card-title mb-0">
+                            <a href="{{ url_for('view_material', material_id=material.id) }}" 
+                               class="text-decoration-none text-dark stretched-link">
+                                {{ material.title }}
+                            </a>
+                        </h5>
+                        {% if material.filename %}
+                        <span class="badge bg-primary rounded-pill ms-2">
+                            {{ material.filename.split('.')[-1].upper() }}
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <p class="card-text text-muted mb-3">{{ material.description }}</p>
+
+                    <div class="d-flex align-items-center text-muted small">
+                        {% if material.author.email %}
+                        <img src="https://www.gravatar.com/avatar/{{ material.author.email|md5 }}?s=24&d=identicon" 
+                             class="rounded-circle me-2" alt="{{ material.author.username }}'s avatar">
+                        {% else %}
+                        <img src="https://www.gravatar.com/avatar/00000000000000000000000000000000?s=24&d=identicon" 
+                             class="rounded-circle me-2" alt="Default avatar">
+                        {% endif %}
+                        {{ material.author.username }}
+                        <span class="mx-2">•</span>
+                        <i class="far fa-clock me-1"></i>
+                        {{ material.timestamp.strftime('%b %d, %Y') }}
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0 pt-0 pb-4 px-4">
+                    <div class="d-flex align-items-center">
+                        {% if material.filename %}
+                        <a href="{{ url_for('download_material', material_id=material.id) }}" 
+                           class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-download me-1"></i>Download
+                        </a>
+                        {% endif %}
+                        {% if material.ai_summary %}
+                        <span class="badge bg-info ms-auto">
+                            <i class="fas fa-robot me-1"></i>AI Summary
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        {% if search_query and ai_recommendations %}
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="bg-primary bg-gradient text-white rounded-circle p-3 me-3">
+                                <i class="fas fa-robot fa-2x"></i>
+                            </div>
+                            <div>
+                                <h3 class="h4 mb-1">Learning Resources</h3>
+                                <p class="text-muted mb-0">Curated content for "{{ search_query }}"</p>
+                            </div>
+                        </div>
+                        <div class="markdown-content">
+                            {{ ai_recommendations | safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <div class="mb-4">
+                <img src="https://cdn.jsdelivr.net/npm/@tabler/icons@2.40.0/icons/books.svg" 
+                     class="img-fluid mb-4" style="max-width: 200px; opacity: 0.1;" alt="">
+                <h3 class="h4 text-muted">No study materials yet</h3>
+                <p class="lead text-muted mb-4">Be the first to share valuable learning resources with your peers!</p>
+            </div>
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('upload_material') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-upload me-2"></i>Share Material
+            </a>
+            {% else %}
+            <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-sign-in-alt me-2"></i>Login to Share
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    {% endif %}
+</div>
+
+<style>
+/* Enhanced Card Hover Effects */
+.card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.1) !important;
+}
+
+/* Markdown Content Styling */
+.markdown-content {
+    line-height: 1.7;
+    font-size: 1.1rem;
+}
+.markdown-content h3 {
+    color: #1a73e8;
+    font-size: 1.5rem;
+    margin: 1.5rem 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e9ecef;
+}
+.markdown-content ul {
+    list-style: none;
+    padding-left: 0;
+}
+.markdown-content li {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s ease;
+}
+.markdown-content li:hover {
+    background: #e9ecef;
+}
+.markdown-content a {
+    color: #1a73e8;
+    text-decoration: none;
+    font-weight: 500;
+    display: block;
+}
+.markdown-content a:hover {
+    color: #1557b0;
+}
+.markdown-content a::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    vertical-align: text-bottom;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+.markdown-content a[href*="youtube.com"]::before {
+    background-image: url('https://www.youtube.com/favicon.ico');
+}
+.markdown-content a:not([href*="youtube.com"])::before {
+    background-image: url('https://cdn.jsdelivr.net/npm/@tabler/icons@2.40.0/icons/world.svg');
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+    .display-4 {
+        font-size: 2.5rem;
+    }
+    .lead {
+        font-size: 1.1rem;
+    }
+    .markdown-content {
+        font-size: 1rem;
+    }
+}
+</style>
+{% endblock %}

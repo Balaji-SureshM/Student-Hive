@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="bg-primary bg-gradient text-white rounded-circle p-3 me-3">
+                        <i class="fas fa-comments fa-2x"></i>
+                    </div>
+                    <div>
+                        <h2 class="h4 mb-1">Community Chat</h2>
+                        <p class="text-muted mb-0">Connect with fellow students in real-time</p>
+                    </div>
+                </div>
+                
+                <div class="chat-messages mb-4 bg-light rounded p-3" style="height: 500px; overflow-y: auto;">
+                    {% for message in messages|reverse %}
+                    <div class="message mb-3">
+                        <div class="d-flex align-items-start">
+                            {% if message.author and message.author.email %}
+                            <img src="https://www.gravatar.com/avatar/{{ message.author.email|md5 }}?s=32&d=identicon" 
+                                 class="avatar-sm me-2" alt="{{ message.author.username }}'s avatar">
+                            {% else %}
+                            <img src="https://www.gravatar.com/avatar/00000000000000000000000000000000?s=32&d=identicon" 
+                                 class="avatar-sm me-2" alt="Default avatar">
+                            {% endif %}
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <strong class="text-primary">{{ message.author.username if message.author else 'Unknown User' }}</strong>
+                                    <small class="text-muted">{{ message.timestamp.strftime('%b %d, %H:%M') }}</small>
+                                </div>
+                                <p class="mb-0">{{ message.content }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                {% if current_user.is_authenticated %}
+                <form method="POST" action="{{ url_for('send_message') }}" class="mt-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="fas fa-paper-plane text-primary"></i>
+                        </span>
+                        <input type="text" 
+                               class="form-control border-start-0 ps-0" 
+                               name="content" 
+                               placeholder="Type your message..." 
+                               required 
+                               autocomplete="off">
+                        <button type="submit" class="btn btn-primary px-4">
+                            Send
+                        </button>
+                    </div>
+                </form>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-lock fa-3x text-muted mb-3"></i>
+                    <p class="lead mb-3">Join the conversation!</p>
+                    <p class="text-muted mb-4">Please login to participate in the chat.</p>
+                    <a href="{{ url_for('login') }}" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login to Chat
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Scroll to bottom of chat
+    const chatMessages = document.querySelector('.chat-messages');
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+    // Auto-refresh chat every 10 seconds
+    setInterval(function() {
+        fetch(window.location.href)
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newMessages = doc.querySelector('.chat-messages').innerHTML;
+                const currentMessages = chatMessages.innerHTML;
+                
+                if (newMessages !== currentMessages) {
+                    chatMessages.innerHTML = newMessages;
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+            });
+    }, 5000);
+
+    // Form submission
+    const form = document.querySelector('form');
+    const input = form.querySelector('input[name="content"]');
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (!input.value.trim()) return;
+        
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams(new FormData(form))
+        })
+        .then(() => {
+            input.value = '';
+            input.focus();
+            // Trigger immediate refresh
+            document.querySelector('.chat-messages').dispatchEvent(new Event('refresh'));
+        });
+    });
+});
+</script>
+
+<style>
+.chat-messages {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0,0,0,.2) transparent;
+}
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+.chat-messages::-webkit-scrollbar-track {
+    background: transparent;
+}
+.chat-messages::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,.2);
+    border-radius: 3px;
+}
+.message {
+    transition: background-color 0.2s;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+}
+.message:hover {
+    background-color: rgba(0,0,0,.03);
+}
+</style>
+{% endblock %}

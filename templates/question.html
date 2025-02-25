@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title">{{ question.title }}</h2>
+                <p class="card-text">{{ question.content }}</p>
+                <div class="text-muted">
+                    Asked by {{ question.author.username }} on {{ question.timestamp.strftime('%Y-%m-%d %H:%M') }}
+                </div>
+            </div>
+        </div>
+
+        <h3>{{ question.answers|length }} Answers</h3>
+        
+        {% for answer in question.answers %}
+        <div class="card mb-3 {% if answer.is_ai %}border-info{% endif %}">
+            <div class="card-body">
+                <p class="card-text">{{ answer.content }}</p>
+                <div class="text-muted">
+                    {% if answer.is_ai %}
+                    <span class="badge bg-info">AI Answer</span>
+                    {% endif %}
+                    Answered by {{ answer.author.username }} on {{ answer.timestamp.strftime('%Y-%m-%d %H:%M') }}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        {% if current_user.is_authenticated %}
+        <div class="card mt-4">
+            <div class="card-body">
+                <h4>Your Answer</h4>
+                <form method="POST" action="{{ url_for('post_answer', question_id=question.id) }}">
+                    <div class="mb-3">
+                        <textarea class="form-control" name="content" rows="4" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Post Answer</button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <p class="mt-4">Please <a href="{{ url_for('login') }}">login</a> to post an answer.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

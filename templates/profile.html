@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-md">
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <img src="https://www.gravatar.com/avatar/{{ current_user.email|md5 }}?s=128&d=identicon" 
+                             class="rounded-circle mb-3" alt="{{ current_user.username }}'s avatar"
+                             style="width: 128px; height: 128px;">
+                        <h2 class="card-title">{{ current_user.username }}</h2>
+                        <p class="text-muted">{{ current_user.email }}</p>
+                    </div>
+
+                    <div class="row g-4">
+                        <!-- Statistics -->
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h3 class="h2 mb-0">{{ current_user.questions|length }}</h3>
+                                    <p class="text-muted mb-0">Questions</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h3 class="h2 mb-0">{{ current_user.answers|length }}</h3>
+                                    <p class="text-muted mb-0">Answers</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h3 class="h2 mb-0">{{ current_user.achievements|length }}</h3>
+                                    <p class="text-muted mb-0">Achievements</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="mt-5">
+                        <h3>Recent Activity</h3>
+                        <div class="list-group">
+                            {% for question in current_user.questions[:5] %}
+                            <a href="{{ url_for('view_question', question_id=question.id) }}" 
+                               class="list-group-item list-group-item-action">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">{{ question.title }}</h6>
+                                        <small class="text-muted">Asked a question</small>
+                                    </div>
+                                    <small class="text-muted">{{ question.timestamp.strftime('%Y-%m-%d') }}</small>
+                                </div>
+                            </a>
+                            {% endfor %}
+
+                            {% for achievement in current_user.achievements[:5] %}
+                            <a href="{{ url_for('view_achievement', achievement_id=achievement.id) }}"
+                               class="list-group-item list-group-item-action">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">{{ achievement.title }}</h6>
+                                        <small class="text-muted">Shared an achievement</small>
+                                    </div>
+                                    <small class="text-muted">{{ achievement.timestamp.strftime('%Y-%m-%d') }}</small>
+                                </div>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

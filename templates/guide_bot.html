@@ -1,0 +1,280 @@
+<!-- Guide Bot -->
+<div class="guide-bot">
+    <button class="guide-bot-toggle" onclick="toggleGuideBot()">
+        <i class="fas fa-robot"></i>
+    </button>
+    <div class="guide-bot-window" id="guideBotWindow">
+        <div class="guide-bot-header">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-robot text-primary me-2"></i>
+                <h6 class="mb-0">Guide Bot</h6>
+            </div>
+            <button class="btn-close" onclick="toggleGuideBot()"></button>
+        </div>
+        <div class="guide-bot-messages" id="guideBotMessages">
+            <div class="guide-bot-message">
+                <p>👋 Hi! I'm your guide bot. How can I help you today?</p>
+                <div class="guide-bot-options">
+                    <button onclick="showGuide('general')">Platform Overview</button>
+                    <button onclick="showGuide('qa')">Q&A Help</button>
+                    <button onclick="showGuide('materials')">Study Materials</button>
+                    <button onclick="showGuide('chat')">Chat Room</button>
+                    <button onclick="showGuide('achievements')">Achievements</button>
+                    <button onclick="showGuide('ai_tutor')">AI Tutor</button>
+                    <button onclick="showGuide('projects')">DIY Projects</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block guide_bot_styles %}
+<style>
+    .guide-bot {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+
+    .guide-bot-toggle {
+        width: 50px;
+        height: 50px;
+        border-radius: 25px;
+        background: var(--accent-primary);
+        color: white;
+        border: none;
+        box-shadow: 0 2px 10px var(--shadow-color);
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .guide-bot-toggle:hover {
+        transform: scale(1.1);
+        background: var(--accent-secondary);
+    }
+
+    .guide-bot-window {
+        position: fixed;
+        bottom: 80px;
+        right: 20px;
+        width: 300px;
+        height: 400px;
+        background: var(--bg-primary);
+        border-radius: 1rem;
+        box-shadow: 0 5px 20px var(--shadow-color);
+        display: none;
+        flex-direction: column;
+        border: 1px solid var(--border-color);
+    }
+
+    .guide-bot-header {
+        padding: 15px;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--bg-secondary);
+        border-radius: 1rem 1rem 0 0;
+        color: var(--text-primary);
+    }
+
+    .guide-bot-messages {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 15px;
+        color: var(--text-primary);
+    }
+
+    .guide-bot-message {
+        background: var(--bg-secondary);
+        padding: 15px;
+        border-radius: 1rem;
+        margin-bottom: 15px;
+        animation: slideIn 0.3s ease-out;
+    }
+
+    .guide-bot-options {
+        display: grid;
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .guide-bot-options button {
+        padding: 8px 15px;
+        border: 1px solid var(--accent-primary);
+        border-radius: 20px;
+        background: var(--bg-primary);
+        color: var(--accent-primary);
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+    }
+
+    .guide-bot-options button:hover {
+        background: var(--accent-primary);
+        color: white;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Dark mode specific styles */
+    [data-theme="dark"] .guide-bot-toggle {
+        background: var(--accent-primary);
+    }
+
+    [data-theme="dark"] .guide-bot-toggle:hover {
+        background: var(--accent-secondary);
+    }
+
+    [data-theme="dark"] .btn-close {
+        filter: invert(1);
+    }
+</style>
+{% endblock %}
+
+{% block guide_bot_scripts %}
+<script>
+    function toggleGuideBot() {
+        const window = document.getElementById('guideBotWindow');
+        if (window.style.display === 'flex') {
+            window.style.display = 'none';
+        } else {
+            window.style.display = 'flex';
+        }
+    }
+
+    function showGuide(topic) {
+        const messages = document.getElementById('guideBotMessages');
+        let response = '';
+
+        switch(topic) {
+            case 'general':
+                response = `
+                    <div class="guide-bot-message">
+                        <p>Welcome to Student Community Hub! Here's a quick overview:</p>
+                        <ul>
+                            <li>Ask and answer questions in the Q&A section</li>
+                            <li>Share and access study materials</li>
+                            <li>Share your achievements</li>
+                            <li>Chat with other students in real-time</li>
+                            <li>Get AI assistance when needed</li>
+                        </ul>
+                        <div class="guide-bot-options">
+                            <button onclick="showGuide('qa')">Learn about Q&A</button>
+                        </div>
+                    </div>
+                `;
+                break;
+            case 'qa':
+                response = `
+                    <div class="guide-bot-message">
+                        <p>The Q&A section is where you can:</p>
+                        <ul>
+                            <li>Ask questions about your studies</li>
+                            <li>Help others by answering their questions</li>
+                            <li>Get AI-powered suggestions</li>
+                            <li>Search existing questions</li>
+                        </ul>
+                        <div class="guide-bot-options">
+                            <button onclick="showGuide('materials')">Learn about Study Materials</button>
+                        </div>
+                    </div>
+                `;
+                break;
+            case 'materials':
+                response = `
+                    <div class="guide-bot-message">
+                        <p>In the Study Materials section, you can:</p>
+                        <ul>
+                            <li>Upload study notes and resources</li>
+                            <li>Get AI-generated summaries</li>
+                            <li>Download materials shared by others</li>
+                            <li>Search by topic or subject</li>
+                        </ul>
+                        <div class="guide-bot-options">
+                            <button onclick="showGuide('chat')">Learn about Chat</button>
+                        </div>
+                    </div>
+                `;
+                break;
+            case 'chat':
+                response = `
+                    <div class="guide-bot-message">
+                        <p>The Chat Room allows you to:</p>
+                        <ul>
+                            <li>Connect with other students in real-time</li>
+                            <li>Discuss topics and share ideas</li>
+                            <li>Form study groups</li>
+                            <li>Get quick help from peers</li>
+                        </ul>
+                        <div class="guide-bot-options">
+                            <button onclick="showGuide('general')">Back to Overview</button>
+                        </div>
+                    </div>
+                `;
+                break;
+            case 'achievements':
+                response = `
+                    <div class="guide-bot-message">
+                        <p>In the Achievements section, you can:</p>
+                        <ul>
+                            <li>Track your learning progress</li>
+                            <li>Share your academic accomplishments</li>
+                            <li>View achievements from other students</li>
+                            <li>Get recognition for helping others</li>
+                        </ul>
+                        <div class="guide-bot-options">
+                            <button onclick="showGuide('ai_tutor')">Learn about AI Tutor</button>
+                        </div>
+                    </div>
+                `;
+                break;
+            case 'ai_tutor':
+                response = `
+                    <div class="guide-bot-message">
+                        <p>The AI Tutor feature offers:</p>
+                        <ul>
+                            <li>Personalized learning assistance</li>
+                            <li>Interactive problem-solving help</li>
+                            <li>Concept explanations and examples</li>
+                            <li>Practice questions and feedback</li>
+                        </ul>
+                        <div class="guide-bot-options">
+                            <button onclick="showGuide('projects')">Learn about DIY Projects</button>
+                        </div>
+                    </div>
+                `;
+                break;
+            case 'projects':
+                response = `
+                    <div class="guide-bot-message">
+                        <p>In the DIY Projects section, you can:</p>
+                        <ul>
+                            <li>Create and share your own projects</li>
+                            <li>Collaborate with other students</li>
+                            <li>Get feedback on your work</li>
+                            <li>Learn from others' projects</li>
+                        </ul>
+                        <div class="guide-bot-options">
+                            <button onclick="showGuide('general')">Back to Overview</button>
+                        </div>
+                    </div>
+                `;
+                break;
+        }
+
+        messages.insertAdjacentHTML('beforeend', response);
+        messages.scrollTop = messages.scrollHeight;
+    }
+</script>
+{% endblock %}

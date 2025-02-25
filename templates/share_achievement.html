@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">Share Your Achievement</h2>
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Achievement Title</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="6" required></textarea>
+                        <div class="form-text">Share the details of your achievement and what it means to you.</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Share Achievement</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

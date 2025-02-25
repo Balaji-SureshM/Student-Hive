@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title mb-3">{{ project.title }}</h2>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="text-muted">
+                        Shared by {{ project.author.username }} on {{ project.timestamp.strftime('%Y-%m-%d %H:%M') }}
+                    </div>
+                    <a href="{{ project.repository_link }}" target="_blank" class="btn btn-primary">
+                        <i class="fab fa-github me-1"></i>View on GitHub
+                    </a>
+                </div>
+
+                <h4>Project Description</h4>
+                <div class="card mb-4">
+                    <div class="card-body">
+                        {{ project.description | replace('\n', '<br>')|safe }}
+                    </div>
+                </div>
+
+                {% if project.ai_description and project.ai_description != project.description %}
+                <h4>AI-Generated Description</h4>
+                <div class="card border-info">
+                    <div class="card-body">
+                        <span class="badge bg-info mb-2">AI Generated</span>
+                        <p class="card-text">{{ project.ai_description | replace('\n', '<br>')|safe }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

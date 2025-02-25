@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-5 bg-light">
+    <div class="row align-items-center">
+        <div class="col-lg-6 text-center text-lg-start">
+            <h1 class="display-4 fw-bold">Welcome to Student Community Hub</h1>
+            <p class="lead text-muted">A platform where students can learn, share resources, and grow together.</p>
+        </div>
+        <div class="col-lg-6 text-center">
+            <img src="{{ url_for('static', filename='images/Student-group.png') }}" alt="Student Group" class="img-fluid" style="max-width: 500px;">
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center g-4">
+    <!-- Q&A Forum Card -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <div class="display-3 text-primary mb-3">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <h3 class="card-title">Q&A Forum</h3>
+                <p class="card-text">Ask questions and get answers from peers and AI assistance.</p>
+                <a href="{{ url_for('questions') }}" class="btn btn-outline-primary">Browse Questions</a>
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('ask_question') }}" class="btn btn-primary mt-2">Ask Question</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Study Materials Card -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <div class="display-3 text-primary mb-3">
+                    <i class="fas fa-book"></i>
+                </div>
+                <h3 class="card-title">Study Materials</h3>
+                <p class="card-text">Share and access study resources with AI-powered summaries.</p>
+                <a href="{{ url_for('study_materials') }}" class="btn btn-outline-primary">Browse Materials</a>
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('upload_material') }}" class="btn btn-primary mt-2">Share Material</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Tutor Card -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <div class="display-3 text-primary mb-3">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h3 class="card-title">AI Tutor</h3>
+                <p class="card-text">Get personalized learning assistance from our AI tutor.</p>
+                <a href="{{ url_for('ai_tutor') }}" class="btn btn-outline-primary">View Sessions</a>
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('new_tutor_session') }}" class="btn btn-primary mt-2">Start Learning</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Room Card -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <div class="display-3 text-primary mb-3">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h3 class="card-title">Chat Room</h3>
+                <p class="card-text">Join the community discussion in real-time chat.</p>
+                <a href="{{ url_for('chat') }}" class="btn btn-outline-primary">Join Chat</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- DIY Projects Card -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <div class="display-3 text-primary mb-3">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <h3 class="card-title">DIY Projects</h3>
+                <p class="card-text">Share your creative projects and get inspired by others.</p>
+                <a href="{{ url_for('projects') }}" class="btn btn-outline-primary">Browse Projects</a>
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('new_project') }}" class="btn btn-primary mt-2">Share Project</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Achievements Card -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <div class="display-3 text-primary mb-3">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <h3 class="card-title">Campus Navigation</h3>
+                <p class="card-text">Find your way around campus with our interactive 3D navigation system.</p>
+                <a href="http://127.0.0.1:5001" class="btn btn-outline-primary">Open Navigation</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Achievements Card -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <div class="display-3 text-primary mb-3">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <h3 class="card-title">Achievements</h3>
+                <p class="card-text">Share your accomplishments and celebrate with peers.</p>
+                <a href="{{ url_for('achievements') }}" class="btn btn-outline-primary">View Achievements</a>
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('share_achievement') }}" class="btn btn-primary mt-2">Share Achievement</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<style>
+    .card {
+        transition: transform 0.2s, box-shadow 0.2s;
+        border: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .display-3 {
+        font-size: 3rem;
+    }
+    .btn-outline-primary:hover {
+        background-color: #0d6efd;
+        color: white;
+    }
+    
+    /* Guide Bot Styles */
+    .guide-bot {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+    .guide-bot-toggle {
+        width: 50px;
+        height: 50px;
+        border-radius: 25px;
+        background: var(--bs-primary);
+        color: white;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    .guide-bot-toggle:hover {
+        transform: scale(1.1);
+    }
+    .guide-bot-window {
+        position: fixed;
+        bottom: 80px;
+        right: 20px;
+        width: 300px;
+        height: 400px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        display: none;
+        flex-direction: column;
+        border: 1px solid rgba(0,0,0,0.1);
+    }
+    .guide-bot-header {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f8f9fa;
+        border-radius: 10px 10px 0 0;
+    }
+    .guide-bot-messages {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 15px;
+    }
+    .guide-bot-message {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        animation: slideIn 0.3s ease-out;
+    }
+    .guide-bot-options {
+        display: grid;
+        gap: 8px;
+        margin-top: 10px;
+    }
+    .guide-bot-options button {
+        padding: 8px 15px;
+        border: 1px solid var(--bs-primary);
+        border-radius: 20px;
+        background: white;
+        color: var(--bs-primary);
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+    }
+    .guide-bot-options button:hover {
+        background: var(--bs-primary);
+        color: white;
+    }
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<script>
+const guides = {
+    general: [
+        "Welcome to Student Forum! Here's what you can do:",
+        "• Ask and answer questions in the Q&A Forum",
+        "• Share and download study materials",
+        "• Get help from our AI Tutor",
+        "• Chat with other students in real-time",
+        "• Track your achievements and progress",
+        "What would you like to learn more about?"
+    ],
+    qa: [
+        "Here's how to use our Q&A Forum:",
+        "1. Click 'Ask Question' to post your query",
+        "2. Add relevant tags to help others find your question",
+        "3. Get answers from peers and AI assistance",
+        "4. Mark helpful answers as 'Accepted'",
+        "Ready to ask a question?"
+    ],
+    materials: [
+        "About our Study Materials section:",
+        "1. Browse materials by category",
+        "2. Upload your own study resources",
+        "3. Get AI-powered summaries",
+        "4. Download materials for offline use",
+        "Want to explore study materials?"
+    ],
+    chat: [
+        "About our Chat Room:",
+        "1. Join real-time discussions",
+        "2. Connect with fellow students",
+        "3. Share quick tips and help",
+        "4. Build your community",
+        "Ready to start chatting?"
+    ]
+};
+
+function toggleGuideBot() {
+    const window = document.getElementById('guideBotWindow');
+    window.style.display = window.style.display === 'flex' ? 'none' : 'flex';
+}
+
+function showGuide(topic) {
+    const messages = document.getElementById('guideBotMessages');
+    const guide = guides[topic];
+    
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'guide-bot-message';
+    
+    const content = document.createElement('p');
+    content.innerHTML = guide.join('<br>');
+    messageDiv.appendChild(content);
+    
+    const options = document.createElement('div');
+    options.className = 'guide-bot-options';
+    
+    switch(topic) {
+        case 'qa':
+            options.innerHTML = `
+                <button onclick="window.location.href='{{ url_for('ask_question') }}'">Ask a Question</button>
+                <button onclick="window.location.href='{{ url_for('questions') }}'">Browse Questions</button>
+            `;
+            break;
+        case 'materials':
+            options.innerHTML = `
+                <button onclick="window.location.href='{{ url_for('upload_material') }}'">Share Materials</button>
+                <button onclick="window.location.href='{{ url_for('study_materials') }}'">Browse Materials</button>
+            `;
+            break;
+        case 'chat':
+            options.innerHTML = `
+                <button onclick="window.location.href='{{ url_for('chat') }}'">Join Chat Room</button>
+                <button onclick="showGuide('general')">Back to Overview</button>
+            `;
+            break;
+        default:
+            options.innerHTML = `
+                <button onclick="showGuide('qa')">Learn About Q&A</button>
+                <button onclick="showGuide('materials')">Explore Materials</button>
+                <button onclick="showGuide('chat')">Try Chat Room</button>
+            `;
+    }
+    
+    messageDiv.appendChild(options);
+    messages.appendChild(messageDiv);
+    messages.scrollTop = messages.scrollHeight;
+}
+</script>
+{% endblock %}

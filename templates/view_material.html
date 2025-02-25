@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div>
+                        <h2 class="card-title mb-1">{{ material.title }}</h2>
+                        <div class="text-muted">
+                            Shared by {{ material.author.username }} on {{ material.timestamp.strftime('%Y-%m-%d %H:%M') }}
+                        </div>
+                    </div>
+                    {% if material.filename %}
+                    <a href="{{ url_for('download_material', material_id=material.id) }}" class="btn btn-primary">
+                        <i class="fas fa-download me-2"></i>Download Material
+                    </a>
+                    {% endif %}
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-file-alt me-2"></i>Material Information
+                        </h5>
+                        {% if material.filename %}
+                        <div class="d-flex align-items-center mb-3">
+                            <span class="badge bg-info me-2">
+                                <i class="fas fa-file me-1"></i>{{ material.filename }}
+                            </span>
+                            <span class="badge bg-secondary">
+                                {{ material.filename.split('.')[-1].upper() }} File
+                            </span>
+                        </div>
+                        {% endif %}
+                        <h5>Description</h5>
+                        <p class="card-text">{{ material.description }}</p>
+                    </div>
+                </div>
+
+                {% if material.ai_summary %}
+                <div class="card border-info">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-robot me-2"></i>AI-Generated Summary
+                        </h5>
+                        <p class="card-text">{{ material.ai_summary | replace('\n', '<br>')|safe }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

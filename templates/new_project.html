@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">Share Your DIY Project</h2>
+                <form method="POST" id="projectForm">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Project Title</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="repository_link" class="form-label">GitHub Repository Link</label>
+                        <input type="url" class="form-control" id="repository_link" name="repository_link" 
+                               placeholder="https://github.com/username/repository" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Project Description</label>
+                        <div class="form-text mb-2">
+                            Enter your project title and click "Generate Description" to get an AI-generated description, 
+                            which you can then modify.
+                        </div>
+                        <textarea class="form-control" id="description" name="description" rows="8"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <button type="button" id="generateBtn" class="btn btn-secondary">
+                            <i class="fas fa-robot me-1"></i>Generate Description
+                        </button>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Share Project</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('generateBtn').addEventListener('click', async function() {
+    const title = document.getElementById('title').value;
+    if (!title) {
+        alert('Please enter a project title first.');
+        return;
+    }
+    
+    this.disabled = true;
+    this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Generating...';
+    
+    try {
+        const response = await fetch('/projects/new', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ title: title, generate_only: true })
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            document.getElementById('description').value = data.description;
+        } else {
+            alert('Failed to generate description. Please try again.');
+        }
+    } catch (error) {
+        alert('An error occurred. Please try again.');
+    } finally {
+        this.disabled = false;
+        this.innerHTML = '<i class="fas fa-robot me-1"></i>Generate Description';
+    }
+});
+</script>
+{% endblock %}
